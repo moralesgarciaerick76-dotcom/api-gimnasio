@@ -1,4 +1,4 @@
-package com.curso.gimnasio.dto;
+package com.curso.gimnasio.member.infrastructure.adapter.in;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

@@ -1,5 +1,6 @@
 package com.curso.gimnasio.entity;
 
+import com.curso.gimnasio.member.infrastructure.entities.MemberEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -45,7 +46,7 @@ public class Booking {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "member_id", nullable = false)
-    private Member member;
+    private MemberEntity member;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BookingItem> items = new ArrayList<>();
@@ -53,7 +54,7 @@ public class Booking {
     public Booking() {
     }
 
-    public Booking(Member member, String notes) {
+    public Booking(MemberEntity member, String notes) {
         this.member = member;
         this.notes = notes;
         this.bookingDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
@@ -114,11 +115,11 @@ public class Booking {
         this.notes = notes;
     }
 
-    public Member getMember() {
+    public MemberEntity getMember() {
         return member;
     }
 
-    public void setMember(Member member) {
+    public void setMember(MemberEntity member) {
         this.member = member;
     }
 

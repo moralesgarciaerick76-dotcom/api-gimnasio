@@ -1,4 +1,4 @@
-package com.curso.gimnasio.entity;
+package com.curso.gimnasio.member.infrastructure.entities;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -7,12 +7,9 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-/**
- * Socio del gimnasio: la persona que reserva cupos en las clases.
- */
-@Entity
+@Entity(name = "Member")
 @Table(name = "members")
-public class Member {
+public class MemberEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,10 +21,10 @@ public class Member {
     @Column(nullable = false, unique = true, length = 150)
     private String email;
 
-    public Member() {
+    public MemberEntity() {
     }
 
-    public Member(String name, String email) {
+    public MemberEntity(String name, String email) {
         this.name = name;
         this.email = email;
     }

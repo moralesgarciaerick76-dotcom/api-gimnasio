@@ -1,7 +1,8 @@
-package com.curso.gimnasio.controller;
+package com.curso.gimnasio.member.infrastructure.adapter.in;
 
-import com.curso.gimnasio.dto.MemberDto;
-import com.curso.gimnasio.service.MemberService;
+import com.curso.gimnasio.member.application.port.in.CreateMemberUseCase;
+import com.curso.gimnasio.member.application.port.in.DeleteMemberUseCase;
+import com.curso.gimnasio.member.application.port.in.GetMemberUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -23,41 +24,47 @@ import java.util.List;
 @Tag(name = "Socios")
 public class MemberController {
 
-    private final MemberService memberService;
+    private final CreateMemberUseCase createMemberUseCase;
+    private final GetMemberUseCase getMemberUseCase;
+    private final DeleteMemberUseCase deleteMemberUseCase;
 
-    public MemberController(MemberService memberService) {
-        this.memberService = memberService;
+    public MemberController(CreateMemberUseCase createMemberUseCase,
+                            GetMemberUseCase getMemberUseCase,
+                            DeleteMemberUseCase deleteMemberUseCase) {
+        this.createMemberUseCase = createMemberUseCase;
+        this.getMemberUseCase = getMemberUseCase;
+        this.deleteMemberUseCase = deleteMemberUseCase;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registrar socio")
     public MemberDto create(@Valid @RequestBody MemberDto request) {
-        return memberService.create(request);
+        return MemberWebMapper.toDto(createMemberUseCase.create(MemberWebMapper.toCommand(request)));
     }
 
     @GetMapping
     @Operation(summary = "Listar socios")
     public List<MemberDto> findAll() {
-        return memberService.findAll();
+        return MemberWebMapper.toDtoList(getMemberUseCase.findAll());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar socio por id")
     public MemberDto findById(@PathVariable Long id) {
-        return memberService.findById(id);
+        return MemberWebMapper.toDto(getMemberUseCase.findById(id));
     }
 
     @GetMapping("/by-email")
     @Operation(summary = "Buscar socio por email")
     public MemberDto findByEmail(@RequestParam String email) {
-        return memberService.findByEmail(email);
+        return MemberWebMapper.toDto(getMemberUseCase.findByEmail(email));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Eliminar socio (solo si no tiene reservas)")
     public void delete(@PathVariable Long id) {
-        memberService.delete(id);
+        deleteMemberUseCase.delete(id);
     }
 }

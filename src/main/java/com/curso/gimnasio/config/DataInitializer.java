@@ -1,10 +1,10 @@
 package com.curso.gimnasio.config;
 
 import com.curso.gimnasio.entity.GymClass;
-import com.curso.gimnasio.entity.Member;
 import com.curso.gimnasio.entity.Trainer;
+import com.curso.gimnasio.member.application.port.in.CreateMemberCommand;
+import com.curso.gimnasio.member.application.port.in.CreateMemberUseCase;
 import com.curso.gimnasio.repository.GymClassRepository;
-import com.curso.gimnasio.repository.MemberRepository;
 import com.curso.gimnasio.repository.TrainerRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,14 +25,14 @@ public class DataInitializer implements CommandLineRunner {
 
     private final TrainerRepository trainerRepository;
     private final GymClassRepository gymClassRepository;
-    private final MemberRepository memberRepository;
+    private final CreateMemberUseCase createMemberUseCase;
 
     public DataInitializer(TrainerRepository trainerRepository,
                            GymClassRepository gymClassRepository,
-                           MemberRepository memberRepository) {
+                           CreateMemberUseCase createMemberUseCase) {
         this.trainerRepository = trainerRepository;
         this.gymClassRepository = gymClassRepository;
-        this.memberRepository = memberRepository;
+        this.createMemberUseCase = createMemberUseCase;
     }
 
     @Override
@@ -53,9 +53,9 @@ public class DataInitializer implements CommandLineRunner {
         gymClassRepository.save(new GymClass("Spinning Principiantes", "Lun-Mié 18:00", new BigDecimal("18.00"), 0, marco));
         gymClassRepository.save(new GymClass("Funcional Nocturno", "Lun-Mié-Vie 20:00", new BigDecimal("22.00"), 10, andrea));
 
-        memberRepository.save(new Member("Carla Mendoza", "carla.mendoza@mail.com"));
-        memberRepository.save(new Member("Diego Salazar", "diego.salazar@mail.com"));
-        memberRepository.save(new Member("María Quispe", "maria.quispe@mail.com"));
+        createMemberUseCase.create(new CreateMemberCommand("Carla Mendoza", "carla.mendoza@mail.com"));
+        createMemberUseCase.create(new CreateMemberCommand("Diego Salazar", "diego.salazar@mail.com"));
+        createMemberUseCase.create(new CreateMemberCommand("María Quispe", "maria.quispe@mail.com"));
 
         log.info("Datos de ejemplo cargados: 3 entrenadores, 5 clases y 3 socios.");
     }

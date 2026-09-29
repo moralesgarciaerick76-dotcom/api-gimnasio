@@ -8,12 +8,12 @@ import com.curso.gimnasio.entity.Booking;
 import com.curso.gimnasio.entity.BookingItem;
 import com.curso.gimnasio.entity.BookingStatus;
 import com.curso.gimnasio.entity.GymClass;
-import com.curso.gimnasio.entity.Member;
 import com.curso.gimnasio.exception.BusinessRuleException;
 import com.curso.gimnasio.exception.ResourceNotFoundException;
+import com.curso.gimnasio.member.infrastructure.adapter.out.MemberJpaRepository;
+import com.curso.gimnasio.member.infrastructure.entities.MemberEntity;
 import com.curso.gimnasio.repository.BookingRepository;
 import com.curso.gimnasio.repository.GymClassRepository;
-import com.curso.gimnasio.repository.MemberRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -39,11 +39,11 @@ public class BookingService {
     static final int MAX_ACTIVE_BOOKINGS_PER_MEMBER = 3;
 
     private final BookingRepository bookingRepository;
-    private final MemberRepository memberRepository;
+    private final MemberJpaRepository memberRepository;
     private final GymClassRepository gymClassRepository;
 
     public BookingService(BookingRepository bookingRepository,
-                          MemberRepository memberRepository,
+                          MemberJpaRepository memberRepository,
                           GymClassRepository gymClassRepository) {
         this.bookingRepository = bookingRepository;
         this.memberRepository = memberRepository;
@@ -57,7 +57,7 @@ public class BookingService {
      */
     @Transactional
     public BookingResponse createBooking(BookingRequest request) {
-        Member member = memberRepository.findById(request.getMemberId())
+        MemberEntity member = memberRepository.findById(request.getMemberId())
                 .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado: " + request.getMemberId()));
 
         long activeBookings = bookingRepository.countByMemberIdAndStatus(member.getId(), BookingStatus.ACTIVE);
