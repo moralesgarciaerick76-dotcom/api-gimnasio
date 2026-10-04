@@ -3,12 +3,12 @@ package com.curso.gimnasio.service;
 import com.curso.gimnasio.dto.GymClassRequest;
 import com.curso.gimnasio.dto.GymClassResponse;
 import com.curso.gimnasio.entity.GymClass;
-import com.curso.gimnasio.entity.Trainer;
 import com.curso.gimnasio.exception.BusinessRuleException;
 import com.curso.gimnasio.exception.ResourceNotFoundException;
 import com.curso.gimnasio.repository.BookingRepository;
 import com.curso.gimnasio.repository.GymClassRepository;
-import com.curso.gimnasio.repository.TrainerRepository;
+import com.curso.gimnasio.trainer.infrastructure.adapter.out.TrainerJpaRepository;
+import com.curso.gimnasio.trainer.infrastructure.entities.TrainerEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,11 +21,11 @@ import java.util.List;
 public class GymClassService {
 
     private final GymClassRepository gymClassRepository;
-    private final TrainerRepository trainerRepository;
+    private final TrainerJpaRepository trainerRepository;
     private final BookingRepository bookingRepository;
 
     public GymClassService(GymClassRepository gymClassRepository,
-                           TrainerRepository trainerRepository,
+                           TrainerJpaRepository trainerRepository,
                            BookingRepository bookingRepository) {
         this.gymClassRepository = gymClassRepository;
         this.trainerRepository = trainerRepository;
@@ -38,7 +38,7 @@ public class GymClassService {
         if (gymClassRepository.existsByNameIgnoreCase(name)) {
             throw new BusinessRuleException("Ya existe una clase con el nombre: " + name);
         }
-        Trainer trainer = findTrainer(request.getTrainerId());
+        TrainerEntity trainer = findTrainer(request.getTrainerId());
 
         GymClass gymClass = new GymClass(name, request.getSchedule().trim(), toMoney(request.getPrice()),
                 request.getAvailableSpots(), trainer);
@@ -98,7 +98,7 @@ public class GymClassService {
                 .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada: " + id));
     }
 
-    private Trainer findTrainer(Long id) {
+    private TrainerEntity findTrainer(Long id) {
         return trainerRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Entrenador no encontrado: " + id));
     }

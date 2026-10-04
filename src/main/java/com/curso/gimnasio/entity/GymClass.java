@@ -1,5 +1,6 @@
 package com.curso.gimnasio.entity;
 
+import com.curso.gimnasio.trainer.infrastructure.entities.TrainerEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -39,12 +40,12 @@ public class GymClass {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "trainer_id", nullable = false)
-    private Trainer trainer;
+    private TrainerEntity trainer;
 
     public GymClass() {
     }
 
-    public GymClass(String name, String schedule, BigDecimal price, Integer availableSpots, Trainer trainer) {
+    public GymClass(String name, String schedule, BigDecimal price, Integer availableSpots, TrainerEntity trainer) {
         this.name = name;
         this.schedule = schedule;
         this.price = price;
@@ -113,11 +114,11 @@ public class GymClass {
         this.availableSpots = availableSpots;
     }
 
-    public Trainer getTrainer() {
+    public TrainerEntity getTrainer() {
         return trainer;
     }
 
-    public void setTrainer(Trainer trainer) {
+    public void setTrainer(TrainerEntity trainer) {
         this.trainer = trainer;
     }
 }

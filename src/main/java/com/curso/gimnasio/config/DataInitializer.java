@@ -1,11 +1,11 @@
 package com.curso.gimnasio.config;
 
 import com.curso.gimnasio.entity.GymClass;
-import com.curso.gimnasio.entity.Trainer;
 import com.curso.gimnasio.member.application.port.in.CreateMemberCommand;
 import com.curso.gimnasio.member.application.port.in.CreateMemberUseCase;
 import com.curso.gimnasio.repository.GymClassRepository;
-import com.curso.gimnasio.repository.TrainerRepository;
+import com.curso.gimnasio.trainer.infrastructure.adapter.out.TrainerJpaRepository;
+import com.curso.gimnasio.trainer.infrastructure.entities.TrainerEntity;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -23,11 +23,11 @@ public class DataInitializer implements CommandLineRunner {
 
     private static final Logger log = LoggerFactory.getLogger(DataInitializer.class);
 
-    private final TrainerRepository trainerRepository;
+    private final TrainerJpaRepository trainerRepository;
     private final GymClassRepository gymClassRepository;
     private final CreateMemberUseCase createMemberUseCase;
 
-    public DataInitializer(TrainerRepository trainerRepository,
+    public DataInitializer(TrainerJpaRepository trainerRepository,
                            GymClassRepository gymClassRepository,
                            CreateMemberUseCase createMemberUseCase) {
         this.trainerRepository = trainerRepository;
@@ -42,9 +42,9 @@ public class DataInitializer implements CommandLineRunner {
             return;
         }
 
-        Trainer lucia = trainerRepository.save(new Trainer("Lucía Fernández", "lucia.fernandez@gym.com", "Yoga"));
-        Trainer marco = trainerRepository.save(new Trainer("Marco Rivas", "marco.rivas@gym.com", "Spinning"));
-        Trainer andrea = trainerRepository.save(new Trainer("Andrea Castillo", "andrea.castillo@gym.com", "Funcional"));
+        TrainerEntity lucia = trainerRepository.save(new TrainerEntity("Lucía Fernández", "lucia.fernandez@gym.com", "Yoga"));
+        TrainerEntity marco = trainerRepository.save(new TrainerEntity("Marco Rivas", "marco.rivas@gym.com", "Spinning"));
+        TrainerEntity andrea = trainerRepository.save(new TrainerEntity("Andrea Castillo", "andrea.castillo@gym.com", "Funcional"));
 
         // "Spinning Principiantes" arranca sin cupos para poder probar el caso de error.
         gymClassRepository.save(new GymClass("Yoga Matutino", "Lun-Mié-Vie 07:00", new BigDecimal("25.00"), 12, lucia));
