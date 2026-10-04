@@ -1,4 +1,4 @@
-package com.curso.gimnasio.entity;
+package com.curso.gimnasio.gymclass.infrastructure.entities;
 
 import com.curso.gimnasio.trainer.infrastructure.entities.TrainerEntity;
 import jakarta.persistence.Column;
@@ -12,12 +12,9 @@ import jakarta.persistence.Table;
 
 import java.math.BigDecimal;
 
-/**
- * Clase grupal del gimnasio (Yoga, Spinning...). Se llama GymClass porque "Class" es de Java.
- */
-@Entity
+@Entity(name = "GymClass")
 @Table(name = "gym_classes")
-public class GymClass {
+public class GymClassEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,15 +23,12 @@ public class GymClass {
     @Column(nullable = false, unique = true, length = 120)
     private String name;
 
-    /** Días y hora en texto, por ejemplo "Lun-Mié-Vie 07:00". */
     @Column(nullable = false, length = 80)
     private String schedule;
 
-    /** Precio por cupo. */
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal price;
 
-    /** Cupos que todavía se pueden reservar. */
     @Column(nullable = false)
     private Integer availableSpots;
 
@@ -42,36 +36,15 @@ public class GymClass {
     @JoinColumn(name = "trainer_id", nullable = false)
     private TrainerEntity trainer;
 
-    public GymClass() {
+    public GymClassEntity() {
     }
 
-    public GymClass(String name, String schedule, BigDecimal price, Integer availableSpots, TrainerEntity trainer) {
+    public GymClassEntity(String name, String schedule, BigDecimal price, Integer availableSpots, TrainerEntity trainer) {
         this.name = name;
         this.schedule = schedule;
         this.price = price;
         this.availableSpots = availableSpots;
         this.trainer = trainer;
-    }
-
-    /** true si quedan al menos "spots" cupos libres. */
-    public boolean hasSpots(int spots) {
-        return spots > 0 && availableSpots != null && availableSpots >= spots;
-    }
-
-    /** Se llama al reservar. Nunca deja los cupos en negativo. */
-    public void reserveSpots(int spots) {
-        if (!hasSpots(spots)) {
-            throw new IllegalStateException("Cupos insuficientes en: " + name);
-        }
-        availableSpots = availableSpots - spots;
-    }
-
-    /** Se llama cuando una reserva se cancela o se elimina: los cupos vuelven a estar libres. */
-    public void releaseSpots(int spots) {
-        if (spots <= 0) {
-            throw new IllegalArgumentException("La cantidad de cupos a liberar debe ser mayor a 0");
-        }
-        availableSpots = availableSpots + spots;
     }
 
     public Long getId() {

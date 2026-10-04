@@ -1,8 +1,8 @@
-package com.curso.gimnasio.controller;
+package com.curso.gimnasio.gymclass.infrastructure.adapter.in;
 
-import com.curso.gimnasio.dto.GymClassRequest;
-import com.curso.gimnasio.dto.GymClassResponse;
-import com.curso.gimnasio.service.GymClassService;
+import com.curso.gimnasio.gymclass.application.port.in.CreateGymClassUseCase;
+import com.curso.gimnasio.gymclass.application.port.in.DeleteGymClassUseCase;
+import com.curso.gimnasio.gymclass.application.port.in.GetGymClassUseCase;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,65 +25,71 @@ import java.util.List;
 @Tag(name = "Clases")
 public class GymClassController {
 
-    private final GymClassService gymClassService;
+    private final CreateGymClassUseCase createGymClassUseCase;
+    private final GetGymClassUseCase getGymClassUseCase;
+    private final DeleteGymClassUseCase deleteGymClassUseCase;
 
-    public GymClassController(GymClassService gymClassService) {
-        this.gymClassService = gymClassService;
+    public GymClassController(CreateGymClassUseCase createGymClassUseCase,
+                              GetGymClassUseCase getGymClassUseCase,
+                              DeleteGymClassUseCase deleteGymClassUseCase) {
+        this.createGymClassUseCase = createGymClassUseCase;
+        this.getGymClassUseCase = getGymClassUseCase;
+        this.deleteGymClassUseCase = deleteGymClassUseCase;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Registrar clase")
     public GymClassResponse create(@Valid @RequestBody GymClassRequest request) {
-        return gymClassService.create(request);
+        return GymClassWebMapper.toResponse(createGymClassUseCase.create(GymClassWebMapper.toCommand(request)));
     }
 
     @GetMapping
     @Operation(summary = "Listar clases")
     public List<GymClassResponse> findAll() {
-        return gymClassService.findAll();
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.findAll());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar clase por id")
     public GymClassResponse findById(@PathVariable Long id) {
-        return gymClassService.findById(id);
+        return GymClassWebMapper.toResponse(getGymClassUseCase.findById(id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Eliminar clase (solo si no aparece en reservas)")
     public void delete(@PathVariable Long id) {
-        gymClassService.delete(id);
+        deleteGymClassUseCase.delete(id);
     }
 
     @GetMapping("/search")
     @Operation(summary = "Buscar por nombre (contiene, sin distinguir mayúsculas)")
     public List<GymClassResponse> searchByName(@RequestParam String name) {
-        return gymClassService.searchByName(name);
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.searchByName(name));
     }
 
     @GetMapping("/by-schedule")
     @Operation(summary = "Buscar por horario, por ejemplo 'lun' o '19:00'")
     public List<GymClassResponse> findBySchedule(@RequestParam String schedule) {
-        return gymClassService.findBySchedule(schedule);
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.findBySchedule(schedule));
     }
 
     @GetMapping("/filter")
     @Operation(summary = "Clases hasta un precio máximo (inclusive) y con un mínimo de cupos libres (inclusive)")
     public List<GymClassResponse> filter(@RequestParam BigDecimal maxPrice, @RequestParam Integer minSpots) {
-        return gymClassService.filterByPriceAndSpots(maxPrice, minSpots);
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.filterByPriceAndSpots(maxPrice, minSpots));
     }
 
     @GetMapping("/available")
     @Operation(summary = "Clases con al menos un cupo libre")
     public List<GymClassResponse> findAvailable() {
-        return gymClassService.findAvailable();
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.findAvailable());
     }
 
     @GetMapping("/by-trainer")
     @Operation(summary = "Clases de un entrenador, por nombre")
     public List<GymClassResponse> findByTrainer(@RequestParam String trainerName) {
-        return gymClassService.findByTrainerName(trainerName);
+        return GymClassWebMapper.toResponseList(getGymClassUseCase.findByTrainerName(trainerName));
     }
 }

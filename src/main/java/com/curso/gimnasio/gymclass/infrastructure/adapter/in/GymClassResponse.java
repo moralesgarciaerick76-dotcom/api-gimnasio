@@ -1,4 +1,4 @@
-package com.curso.gimnasio.dto;
+package com.curso.gimnasio.gymclass.infrastructure.adapter.in;
 
 import java.math.BigDecimal;
 

@@ -1,5 +1,6 @@
 package com.curso.gimnasio.entity;
 
+import com.curso.gimnasio.gymclass.infrastructure.entities.GymClassEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -44,7 +45,7 @@ public class BookingItem {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "gym_class_id", nullable = false)
-    private GymClass gymClass;
+    private GymClassEntity gymClass;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
@@ -53,7 +54,7 @@ public class BookingItem {
     public BookingItem() {
     }
 
-    public BookingItem(GymClass gymClass, Integer spots) {
+    public BookingItem(GymClassEntity gymClass, Integer spots) {
         this.gymClass = gymClass;
         this.spots = spots;
         this.unitPrice = gymClass.getPrice();
@@ -87,11 +88,11 @@ public class BookingItem {
         this.unitPrice = unitPrice;
     }
 
-    public GymClass getGymClass() {
+    public GymClassEntity getGymClass() {
         return gymClass;
     }
 
-    public void setGymClass(GymClass gymClass) {
+    public void setGymClass(GymClassEntity gymClass) {
         this.gymClass = gymClass;
     }
 

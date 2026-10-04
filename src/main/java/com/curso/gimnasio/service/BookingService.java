@@ -7,13 +7,13 @@ import com.curso.gimnasio.dto.BookingResponse;
 import com.curso.gimnasio.entity.Booking;
 import com.curso.gimnasio.entity.BookingItem;
 import com.curso.gimnasio.entity.BookingStatus;
-import com.curso.gimnasio.entity.GymClass;
 import com.curso.gimnasio.exception.BusinessRuleException;
+import com.curso.gimnasio.gymclass.infrastructure.adapter.out.GymClassJpaRepository;
+import com.curso.gimnasio.gymclass.infrastructure.entities.GymClassEntity;
 import com.curso.gimnasio.exception.ResourceNotFoundException;
 import com.curso.gimnasio.member.infrastructure.adapter.out.MemberJpaRepository;
 import com.curso.gimnasio.member.infrastructure.entities.MemberEntity;
 import com.curso.gimnasio.repository.BookingRepository;
-import com.curso.gimnasio.repository.GymClassRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +40,11 @@ public class BookingService {
 
     private final BookingRepository bookingRepository;
     private final MemberJpaRepository memberRepository;
-    private final GymClassRepository gymClassRepository;
+    private final GymClassJpaRepository gymClassRepository;
 
     public BookingService(BookingRepository bookingRepository,
                           MemberJpaRepository memberRepository,
-                          GymClassRepository gymClassRepository) {
+                          GymClassJpaRepository gymClassRepository) {
         this.bookingRepository = bookingRepository;
         this.memberRepository = memberRepository;
         this.gymClassRepository = gymClassRepository;
@@ -82,15 +82,15 @@ public class BookingService {
             int spots = entry.getValue();
 
             // findByIdForUpdate bloquea la fila de la clase: evita vender dos veces el mismo cupo
-            GymClass gymClass = gymClassRepository.findByIdForUpdate(classId)
+            GymClassEntity gymClass = gymClassRepository.findByIdForUpdate(classId)
                     .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada: " + classId));
 
-            if (!gymClass.hasSpots(spots)) {
+            if (gymClass.getAvailableSpots() < spots) {
                 throw new BusinessRuleException("Cupos insuficientes para: " + gymClass.getName()
                         + " (disponibles: " + gymClass.getAvailableSpots() + ", pedidos: " + spots + ")");
             }
 
-            gymClass.reserveSpots(spots);
+            gymClass.setAvailableSpots(gymClass.getAvailableSpots() - spots);
             gymClassRepository.save(gymClass);
 
             booking.addItem(new BookingItem(gymClass, spots));
@@ -149,8 +149,8 @@ public class BookingService {
 
     private void releaseSpots(Booking booking) {
         for (BookingItem item : booking.getItems()) {
-            GymClass gymClass = item.getGymClass();
-            gymClass.releaseSpots(item.getSpots());
+            GymClassEntity gymClass = item.getGymClass();
+            gymClass.setAvailableSpots(gymClass.getAvailableSpots() + item.getSpots());
             gymClassRepository.save(gymClass);
         }
     }
