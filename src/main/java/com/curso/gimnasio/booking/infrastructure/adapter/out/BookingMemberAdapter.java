@@ -18,7 +18,7 @@ public class BookingMemberAdapter implements BookingMemberPort {
     }
 
     @Override
-    public Optional<Member> findById(Long memberId) {
-        return memberJpaRepository.findById(memberId).map(MemberPersistenceMapper::toDomain);
+    public Optional<Member> findByIdForUpdate(Long memberId) {
+        return memberJpaRepository.findByIdForUpdate(memberId).map(MemberPersistenceMapper::toDomain);
     }
 }

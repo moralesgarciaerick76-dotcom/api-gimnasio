@@ -14,6 +14,8 @@ public interface BookingRepositoryPort {
 
     Optional<Booking> findById(Long id);
 
+    Optional<Booking> findByIdForUpdate(Long id);
+
     List<Booking> findByMemberEmail(String email);
 
     List<Booking> findByTrainerName(String trainerName);

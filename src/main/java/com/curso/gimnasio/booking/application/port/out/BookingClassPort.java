@@ -6,8 +6,6 @@ import java.util.Optional;
 
 public interface BookingClassPort {
 
-    Optional<GymClass> findById(Long classId);
-
     Optional<GymClass> findByIdForUpdate(Long classId);
 
     void updateAvailableSpots(GymClass gymClass);

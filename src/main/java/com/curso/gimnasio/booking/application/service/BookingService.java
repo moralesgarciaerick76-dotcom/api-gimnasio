@@ -50,7 +50,7 @@ public class BookingService implements CreateBookingUseCase, GetBookingUseCase, 
     public Booking create(CreateBookingCommand command) {
         Map<Long, Integer> spotsByClass = groupSpotsByClass(command.getItems());
 
-        Member member = memberPort.findById(command.getMemberId())
+        Member member = memberPort.findByIdForUpdate(command.getMemberId())
                 .orElseThrow(() -> new ResourceNotFoundException("Socio no encontrado: " + command.getMemberId()));
 
         long activeBookings = repository.countByMemberAndStatus(member.getId(), BookingStatus.ACTIVE);
@@ -117,11 +117,16 @@ public class BookingService implements CreateBookingUseCase, GetBookingUseCase, 
     @Override
     @Transactional
     public void delete(Long id) {
-        Booking booking = findById(id);
+        Booking booking = findByIdForUpdate(id);
         if (booking.isActive()) {
             releaseSpots(booking);
         }
         repository.delete(booking);
+    }
+
+    private Booking findByIdForUpdate(Long id) {
+        return repository.findByIdForUpdate(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reserva no encontrada: " + id));
     }
 
     private Map<Long, Integer> groupSpotsByClass(List<BookingItemCommand> items) {
@@ -143,7 +148,7 @@ public class BookingService implements CreateBookingUseCase, GetBookingUseCase, 
                 .sorted((a, b) -> Long.compare(a.getClassId(), b.getClassId()))
                 .toList();
         for (BookingItem item : items) {
-            GymClass gymClass = classPort.findById(item.getClassId())
+            GymClass gymClass = classPort.findByIdForUpdate(item.getClassId())
                     .orElseThrow(() -> new ResourceNotFoundException("Clase no encontrada: " + item.getClassId()));
             gymClass.releaseSpots(item.getSpots());
             classPort.updateAvailableSpots(gymClass);

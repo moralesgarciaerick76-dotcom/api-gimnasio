@@ -6,5 +6,5 @@ import java.util.Optional;
 
 public interface BookingMemberPort {
 
-    Optional<Member> findById(Long memberId);
+    Optional<Member> findByIdForUpdate(Long memberId);
 }

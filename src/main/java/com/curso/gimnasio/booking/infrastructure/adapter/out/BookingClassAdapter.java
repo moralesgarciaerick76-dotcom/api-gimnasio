@@ -20,11 +20,6 @@ public class BookingClassAdapter implements BookingClassPort {
     }
 
     @Override
-    public Optional<GymClass> findById(Long classId) {
-        return gymClassJpaRepository.findById(classId).map(GymClassPersistenceMapper::toDomain);
-    }
-
-    @Override
     public Optional<GymClass> findByIdForUpdate(Long classId) {
         return gymClassJpaRepository.findByIdForUpdate(classId).map(GymClassPersistenceMapper::toDomain);
     }

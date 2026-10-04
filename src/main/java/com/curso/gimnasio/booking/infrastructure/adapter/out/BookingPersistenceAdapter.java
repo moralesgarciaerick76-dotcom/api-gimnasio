@@ -60,6 +60,11 @@ public class BookingPersistenceAdapter implements BookingRepositoryPort {
     }
 
     @Override
+    public Optional<Booking> findByIdForUpdate(Long id) {
+        return bookingJpaRepository.findByIdForUpdate(id).map(BookingPersistenceMapper::toDomain);
+    }
+
+    @Override
     public List<Booking> findByMemberEmail(String email) {
         return toDomainList(bookingJpaRepository.findByMemberEmailIgnoreCase(email));
     }
