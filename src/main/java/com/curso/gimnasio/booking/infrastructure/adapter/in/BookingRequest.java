@@ -1,4 +1,4 @@
-package com.curso.gimnasio.dto;
+package com.curso.gimnasio.booking.infrastructure.adapter.in;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
@@ -12,7 +12,6 @@ public class BookingRequest {
     @NotNull(message = "El socio es obligatorio")
     private Long memberId;
 
-    /** Opcional. */
     @Size(max = 255, message = "Las observaciones no pueden tener más de 255 caracteres")
     private String notes;
 

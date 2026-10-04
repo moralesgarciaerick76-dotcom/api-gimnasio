@@ -1,4 +1,4 @@
-package com.curso.gimnasio.entity;
+package com.curso.gimnasio.booking.infrastructure.entities;
 
 import com.curso.gimnasio.gymclass.infrastructure.entities.GymClassEntity;
 import jakarta.persistence.Column;
@@ -13,33 +13,18 @@ import jakarta.persistence.UniqueConstraint;
 
 import java.math.BigDecimal;
 
-/**
- * TABLA INTERMEDIA entre Booking y GymClass.
- *
- * Una reserva puede incluir muchas clases y una misma clase aparece en muchas reservas:
- * es una relación muchos a muchos (N:M). En vez de usar @ManyToMany, la tabla intermedia
- * se modela como entidad propia porque necesita guardar datos de la relación: cuántos
- * cupos se reservaron (spots) y a qué precio estaba el cupo en ese momento (unitPrice).
- *
- * bookings 1 ── * booking_items * ── 1 gym_classes
- *
- * La restricción única (booking_id, gym_class_id) garantiza que una clase aparezca una
- * sola vez por reserva.
- */
-@Entity
+@Entity(name = "BookingItem")
 @Table(name = "booking_items",
        uniqueConstraints = @UniqueConstraint(name = "uk_booking_class", columnNames = {"booking_id", "gym_class_id"}))
-public class BookingItem {
+public class BookingItemEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    /** Cupos reservados en esa clase (el socio puede llevar invitados). */
     @Column(nullable = false)
     private Integer spots;
 
-    /** Precio del cupo al momento de reservar: si la clase sube de precio después, la reserva no cambia. */
     @Column(nullable = false, precision = 10, scale = 2)
     private BigDecimal unitPrice;
 
@@ -49,19 +34,15 @@ public class BookingItem {
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "booking_id", nullable = false)
-    private Booking booking;
+    private BookingEntity booking;
 
-    public BookingItem() {
+    public BookingItemEntity() {
     }
 
-    public BookingItem(GymClassEntity gymClass, Integer spots) {
+    public BookingItemEntity(GymClassEntity gymClass, Integer spots, BigDecimal unitPrice) {
         this.gymClass = gymClass;
         this.spots = spots;
-        this.unitPrice = gymClass.getPrice();
-    }
-
-    public BigDecimal getSubtotal() {
-        return unitPrice.multiply(BigDecimal.valueOf(spots));
+        this.unitPrice = unitPrice;
     }
 
     public Long getId() {
@@ -96,11 +77,11 @@ public class BookingItem {
         this.gymClass = gymClass;
     }
 
-    public Booking getBooking() {
+    public BookingEntity getBooking() {
         return booking;
     }
 
-    public void setBooking(Booking booking) {
+    public void setBooking(BookingEntity booking) {
         this.booking = booking;
     }
 }

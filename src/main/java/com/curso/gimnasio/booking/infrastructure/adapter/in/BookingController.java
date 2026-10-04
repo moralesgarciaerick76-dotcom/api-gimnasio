@@ -1,9 +1,9 @@
-package com.curso.gimnasio.controller;
+package com.curso.gimnasio.booking.infrastructure.adapter.in;
 
-import com.curso.gimnasio.dto.BookingRequest;
-import com.curso.gimnasio.dto.BookingResponse;
-import com.curso.gimnasio.entity.BookingStatus;
-import com.curso.gimnasio.service.BookingService;
+import com.curso.gimnasio.booking.application.port.in.CreateBookingUseCase;
+import com.curso.gimnasio.booking.application.port.in.DeleteBookingUseCase;
+import com.curso.gimnasio.booking.application.port.in.GetBookingUseCase;
+import com.curso.gimnasio.booking.domain.model.BookingStatus;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -25,53 +25,59 @@ import java.util.List;
 @Tag(name = "Reservas")
 public class BookingController {
 
-    private final BookingService bookingService;
+    private final CreateBookingUseCase createBookingUseCase;
+    private final GetBookingUseCase getBookingUseCase;
+    private final DeleteBookingUseCase deleteBookingUseCase;
 
-    public BookingController(BookingService bookingService) {
-        this.bookingService = bookingService;
+    public BookingController(CreateBookingUseCase createBookingUseCase,
+                             GetBookingUseCase getBookingUseCase,
+                             DeleteBookingUseCase deleteBookingUseCase) {
+        this.createBookingUseCase = createBookingUseCase;
+        this.getBookingUseCase = getBookingUseCase;
+        this.deleteBookingUseCase = deleteBookingUseCase;
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Crear reserva (caso de uso central)")
     public BookingResponse create(@Valid @RequestBody BookingRequest request) {
-        return bookingService.createBooking(request);
+        return BookingWebMapper.toResponse(createBookingUseCase.create(BookingWebMapper.toCommand(request)));
     }
 
     @GetMapping
     @Operation(summary = "Listar reservas")
     public List<BookingResponse> findAll() {
-        return bookingService.findAll();
+        return BookingWebMapper.toResponseList(getBookingUseCase.findAll());
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Buscar reserva por id")
     public BookingResponse findById(@PathVariable Long id) {
-        return bookingService.findById(id);
+        return BookingWebMapper.toResponse(getBookingUseCase.findById(id));
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Eliminar reserva (si estaba activa, libera los cupos)")
     public void delete(@PathVariable Long id) {
-        bookingService.delete(id);
+        deleteBookingUseCase.delete(id);
     }
 
     @GetMapping("/by-member-email")
     @Operation(summary = "Reservas de un socio, por email")
     public List<BookingResponse> findByMemberEmail(@RequestParam String email) {
-        return bookingService.findByMemberEmail(email);
+        return BookingWebMapper.toResponseList(getBookingUseCase.findByMemberEmail(email));
     }
 
     @GetMapping("/by-trainer")
     @Operation(summary = "Reservas que incluyen clases de un entrenador (JPQL con JOIN)")
     public List<BookingResponse> findByTrainer(@RequestParam String trainerName) {
-        return bookingService.findByTrainerName(trainerName);
+        return BookingWebMapper.toResponseList(getBookingUseCase.findByTrainerName(trainerName));
     }
 
     @GetMapping("/by-status")
     @Operation(summary = "Reservas por estado: ACTIVE o CANCELLED")
     public List<BookingResponse> findByStatus(@RequestParam BookingStatus status) {
-        return bookingService.findByStatus(status);
+        return BookingWebMapper.toResponseList(getBookingUseCase.findByStatus(status));
     }
 }

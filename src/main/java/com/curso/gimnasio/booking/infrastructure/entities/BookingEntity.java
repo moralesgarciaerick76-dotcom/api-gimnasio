@@ -1,5 +1,6 @@
-package com.curso.gimnasio.entity;
+package com.curso.gimnasio.booking.infrastructure.entities;
 
+import com.curso.gimnasio.booking.domain.model.BookingStatus;
 import com.curso.gimnasio.member.infrastructure.entities.MemberEntity;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -15,16 +16,12 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Reserva: un socio aparta cupos en una o varias clases.
- */
-@Entity
+@Entity(name = "Booking")
 @Table(name = "bookings")
-public class Booking {
+public class BookingEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,14 +30,12 @@ public class Booking {
     @Column(nullable = false)
     private LocalDateTime bookingDate;
 
-    /** Se llena recién cuando el socio cancela la reserva. */
     private LocalDateTime cancelledAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private BookingStatus status;
 
-    /** Observaciones libres del socio, por ejemplo "voy con un invitado". */
     @Column(length = 255)
     private String notes;
 
@@ -49,30 +44,21 @@ public class Booking {
     private MemberEntity member;
 
     @OneToMany(mappedBy = "booking", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<BookingItem> items = new ArrayList<>();
+    private List<BookingItemEntity> items = new ArrayList<>();
 
-    public Booking() {
+    public BookingEntity() {
     }
 
-    public Booking(MemberEntity member, String notes) {
+    public BookingEntity(MemberEntity member, LocalDateTime bookingDate, BookingStatus status, String notes) {
         this.member = member;
+        this.bookingDate = bookingDate;
+        this.status = status;
         this.notes = notes;
-        this.bookingDate = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
-        this.status = BookingStatus.ACTIVE;
     }
 
-    public void addItem(BookingItem item) {
+    public void addItem(BookingItemEntity item) {
         item.setBooking(this);
         items.add(item);
-    }
-
-    public boolean isActive() {
-        return status == BookingStatus.ACTIVE;
-    }
-
-    public void cancel() {
-        this.status = BookingStatus.CANCELLED;
-        this.cancelledAt = LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public Long getId() {
@@ -123,11 +109,11 @@ public class Booking {
         this.member = member;
     }
 
-    public List<BookingItem> getItems() {
+    public List<BookingItemEntity> getItems() {
         return items;
     }
 
-    public void setItems(List<BookingItem> items) {
+    public void setItems(List<BookingItemEntity> items) {
         this.items = items;
     }
 }

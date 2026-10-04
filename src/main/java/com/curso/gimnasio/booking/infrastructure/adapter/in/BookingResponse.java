@@ -1,6 +1,6 @@
-package com.curso.gimnasio.dto;
+package com.curso.gimnasio.booking.infrastructure.adapter.in;
 
-import com.curso.gimnasio.entity.BookingStatus;
+import com.curso.gimnasio.booking.domain.model.BookingStatus;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

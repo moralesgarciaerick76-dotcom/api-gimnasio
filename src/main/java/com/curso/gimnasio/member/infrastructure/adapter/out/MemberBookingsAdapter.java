@@ -1,20 +1,20 @@
 package com.curso.gimnasio.member.infrastructure.adapter.out;
 
+import com.curso.gimnasio.booking.infrastructure.adapter.out.BookingJpaRepository;
 import com.curso.gimnasio.member.application.port.out.MemberBookingsPort;
-import com.curso.gimnasio.repository.BookingRepository;
 import org.springframework.stereotype.Component;
 
 @Component
 public class MemberBookingsAdapter implements MemberBookingsPort {
 
-    private final BookingRepository bookingRepository;
+    private final BookingJpaRepository bookingJpaRepository;
 
-    public MemberBookingsAdapter(BookingRepository bookingRepository) {
-        this.bookingRepository = bookingRepository;
+    public MemberBookingsAdapter(BookingJpaRepository bookingJpaRepository) {
+        this.bookingJpaRepository = bookingJpaRepository;
     }
 
     @Override
     public boolean hasBookings(Long memberId) {
-        return bookingRepository.existsByMemberId(memberId);
+        return bookingJpaRepository.existsByMemberId(memberId);
     }
 }
