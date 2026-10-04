@@ -1,6 +1,8 @@
 package com.curso.gimnasio.member.domain.exception;
 
-public class MemberBusinessRuleException extends RuntimeException {
+import com.curso.gimnasio.exception.BusinessRuleException;
+
+public class MemberBusinessRuleException extends BusinessRuleException {
 
     public MemberBusinessRuleException(String message) {
         super(message);

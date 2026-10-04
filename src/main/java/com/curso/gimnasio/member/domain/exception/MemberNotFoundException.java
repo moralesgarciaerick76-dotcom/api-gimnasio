@@ -1,6 +1,8 @@
 package com.curso.gimnasio.member.domain.exception;
 
-public class MemberNotFoundException extends RuntimeException {
+import com.curso.gimnasio.exception.ResourceNotFoundException;
+
+public class MemberNotFoundException extends ResourceNotFoundException {
 
     public MemberNotFoundException(String message) {
         super(message);

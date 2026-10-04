@@ -1,7 +1,5 @@
 package com.curso.gimnasio.exception;
 
-import com.curso.gimnasio.member.domain.exception.MemberBusinessRuleException;
-import com.curso.gimnasio.member.domain.exception.MemberNotFoundException;
 import org.springframework.dao.ConcurrencyFailureException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -35,16 +33,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BusinessRuleException.class)
     public ResponseEntity<Map<String, Object>> handleBusinessRule(BusinessRuleException ex) {
-        return build(HttpStatus.CONFLICT, ex.getMessage());
-    }
-
-    @ExceptionHandler(MemberNotFoundException.class)
-    public ResponseEntity<Map<String, Object>> handleMemberNotFound(MemberNotFoundException ex) {
-        return build(HttpStatus.NOT_FOUND, ex.getMessage());
-    }
-
-    @ExceptionHandler(MemberBusinessRuleException.class)
-    public ResponseEntity<Map<String, Object>> handleMemberBusinessRule(MemberBusinessRuleException ex) {
         return build(HttpStatus.CONFLICT, ex.getMessage());
     }
 
