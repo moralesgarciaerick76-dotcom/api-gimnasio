@@ -1,5 +1,6 @@
 package com.curso.gimnasio.booking.infrastructure.adapter.in;
 
+import com.curso.gimnasio.booking.application.port.in.CancelBookingUseCase;
 import com.curso.gimnasio.booking.application.port.in.CreateBookingUseCase;
 import com.curso.gimnasio.booking.application.port.in.DeleteBookingUseCase;
 import com.curso.gimnasio.booking.application.port.in.GetBookingUseCase;
@@ -10,6 +11,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,13 +29,16 @@ public class BookingController {
 
     private final CreateBookingUseCase createBookingUseCase;
     private final GetBookingUseCase getBookingUseCase;
+    private final CancelBookingUseCase cancelBookingUseCase;
     private final DeleteBookingUseCase deleteBookingUseCase;
 
     public BookingController(CreateBookingUseCase createBookingUseCase,
                              GetBookingUseCase getBookingUseCase,
+                             CancelBookingUseCase cancelBookingUseCase,
                              DeleteBookingUseCase deleteBookingUseCase) {
         this.createBookingUseCase = createBookingUseCase;
         this.getBookingUseCase = getBookingUseCase;
+        this.cancelBookingUseCase = cancelBookingUseCase;
         this.deleteBookingUseCase = deleteBookingUseCase;
     }
 
@@ -54,6 +59,12 @@ public class BookingController {
     @Operation(summary = "Buscar reserva por id")
     public BookingResponse findById(@PathVariable Long id) {
         return BookingWebMapper.toResponse(getBookingUseCase.findById(id));
+    }
+
+    @PatchMapping("/{id}/cancel")
+    @Operation(summary = "Cancelar reserva (pasa a CANCELLED, registra la fecha y libera los cupos)")
+    public BookingResponse cancel(@PathVariable Long id) {
+        return BookingWebMapper.toResponse(cancelBookingUseCase.cancel(id));
     }
 
     @DeleteMapping("/{id}")

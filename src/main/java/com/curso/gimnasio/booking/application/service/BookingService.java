@@ -1,6 +1,7 @@
 package com.curso.gimnasio.booking.application.service;
 
 import com.curso.gimnasio.booking.application.port.in.BookingItemCommand;
+import com.curso.gimnasio.booking.application.port.in.CancelBookingUseCase;
 import com.curso.gimnasio.booking.application.port.in.CreateBookingCommand;
 import com.curso.gimnasio.booking.application.port.in.CreateBookingUseCase;
 import com.curso.gimnasio.booking.application.port.in.DeleteBookingUseCase;
@@ -25,7 +26,7 @@ import java.util.TreeMap;
 
 @Service
 @Transactional(readOnly = true)
-public class BookingService implements CreateBookingUseCase, GetBookingUseCase, DeleteBookingUseCase {
+public class BookingService implements CreateBookingUseCase, GetBookingUseCase, CancelBookingUseCase, DeleteBookingUseCase {
 
     static final int MAX_ACTIVE_BOOKINGS_PER_MEMBER = 3;
     static final int MAX_SPOTS_PER_CLASS = 10;
@@ -112,6 +113,18 @@ public class BookingService implements CreateBookingUseCase, GetBookingUseCase, 
     @Override
     public List<Booking> findByStatus(BookingStatus status) {
         return repository.findByStatus(status);
+    }
+
+    @Override
+    @Transactional
+    public Booking cancel(Long id) {
+        Booking booking = findByIdForUpdate(id);
+        if (!booking.isActive()) {
+            throw new BusinessRuleException("La reserva #" + id + " ya estaba cancelada");
+        }
+        releaseSpots(booking);
+        booking.cancel();
+        return repository.save(booking);
     }
 
     @Override
