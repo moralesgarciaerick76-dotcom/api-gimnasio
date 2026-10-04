@@ -28,6 +28,7 @@ import java.util.TreeMap;
 public class BookingService implements CreateBookingUseCase, GetBookingUseCase, DeleteBookingUseCase {
 
     static final int MAX_ACTIVE_BOOKINGS_PER_MEMBER = 3;
+    static final int MAX_SPOTS_PER_CLASS = 10;
 
     private final BookingRepositoryPort repository;
     private final BookingMemberPort memberPort;
@@ -127,6 +128,12 @@ public class BookingService implements CreateBookingUseCase, GetBookingUseCase, 
         Map<Long, Integer> spotsByClass = new TreeMap<>();
         for (BookingItemCommand item : items) {
             spotsByClass.merge(item.getClassId(), item.getSpots(), Integer::sum);
+        }
+        for (Map.Entry<Long, Integer> entry : spotsByClass.entrySet()) {
+            if (entry.getValue() > MAX_SPOTS_PER_CLASS) {
+                throw new BusinessRuleException("La clase " + entry.getKey() + " se repite en la reserva y suma "
+                        + entry.getValue() + " cupos (máximo " + MAX_SPOTS_PER_CLASS + " por clase)");
+            }
         }
         return spotsByClass;
     }
